@@ -51,8 +51,9 @@ Dir.mktmpdir do |tmpdir|
   File.chmod(0755, binary_path)
 end
 
-# Create a dummy Makefile
+# Create a dummy Makefile with the necessary targets
 File.open('Makefile', 'w') do |file|
-    file.write("all:\n")
-    file.write("\t\n")
+  file.write("all:\n\t@echo 'Dummy target: all'\n")
+  file.write("clean:\n\t@echo 'Dummy target: clean'\n")
+  file.write("install:\n\t@echo 'Dummy target: install'\n")
 end
