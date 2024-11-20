@@ -16,7 +16,7 @@ module Fastlane
       end
 
       def self.bundled_tuist_cli_path
-        File.expand_path("../../../../../bin/tuist", File.dirname(__FILE__))
+        File.expand_path("../../../../../ext/tuist/bin/tuist", File.dirname(__FILE__))
       end
 
       def self.call_tuist_cli(command)
