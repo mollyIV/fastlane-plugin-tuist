@@ -4,18 +4,20 @@ require_relative '../helper/tuist_helper'
 
 module Fastlane
   module Actions
-    class TuistGenerateAction < Action
+    class TuistCacheAction < Action
       def self.run(params)
-        command = ['generate']
-        command.push(params[:sources]) if params[:sources]
+        command = ['cache']
+        command.push(params[:targets]) if params[:targets]
 
         command.push('--path').push(params[:path]) if params[:path]
 
         command.push('--configuration').push(params[:configuration]) if params[:configuration]
 
-        command.push(params[:open] ? '--open' : '--no-open') unless params[:open].nil?
+        command.push('--external-only') if params[:external_only]
 
-        command.push(params[:binary_cache] ? '--binary-cache' : '--no-binary-cache') unless params[:binary_cache].nil?
+        command.push('--generate-only') if params[:generate_only]
+
+        command.push('--print-hashes') if params[:print_hashes]
 
         command.push('--help') if params[:help]
 
@@ -23,7 +25,7 @@ module Fastlane
       end
 
       def self.description
-        "Generates an Xcode workspace to start working on the project"
+        "Warms the local and remote cache"
       end
 
       def self.authors
@@ -37,36 +39,43 @@ module Fastlane
       def self.available_options
         [
           FastlaneCore::ConfigItem.new(
-            key: :sources,
-            description: "A list of targets to focus on Other targets will be linked as binaries if possible If no target is specified, all the project targets will be generated (except external ones, such as Swift packages)",
+            key: :targets,
+            description: "A list of targets to cache Those and their dependant targets will be cached If no target is specified, all the project targets (excluding the external ones) and their dependencies will be cached",
             optional: true,
             type: String
           ),
 
           FastlaneCore::ConfigItem.new(
             key: :path,
-            description: "The path to the directory or a subdirectory of the project (env: TUIST_GENERATE_PATH)",
+            description: "The path to the directory that contains the project whose targets will be cached",
             optional: true,
             type: String
           ),
 
           FastlaneCore::ConfigItem.new(
             key: :configuration,
-            description: "Configuration to generate for",
+            description: "Configuration to use for binary caching",
             optional: true,
             type: String
           ),
 
           FastlaneCore::ConfigItem.new(
-            key: :open,
-            description: "Don't open the project after generating it (env: TUIST_GENERATE_OPEN)",
+            key: :external_only,
+            description: "If passed, the command doesn't cache the targets passed in the `--targets` argument, but only their dependencies",
             optional: true,
             type: Boolean
           ),
 
           FastlaneCore::ConfigItem.new(
-            key: :binary_cache,
-            description: "Ignore binary cache and use sources only (env: TUIST_GENERATE_BINARY_CACHE)",
+            key: :generate_only,
+            description: "When passed, it generates the project and skips warming the cache This is useful for debugging purposes",
+            optional: true,
+            type: Boolean
+          ),
+
+          FastlaneCore::ConfigItem.new(
+            key: :print_hashes,
+            description: "When passed, the hashes of the cacheable frameworks in the given project are printed",
             optional: true,
             type: Boolean
           ),
