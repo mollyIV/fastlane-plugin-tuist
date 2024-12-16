@@ -41,9 +41,7 @@ Dir.mktmpdir do |tmpdir|
   # Extract only the tuist binary from the zip file
   Zip::File.open(zip_path) do |zip_file|
     zip_file.each do |entry|
-      if entry.name == 'tuist'
-        entry.extract(binary_path) { true }
-      end
+      entry.extract(File.join(File.dirname(binary_path), entry.name)) { true }
     end
   end
 
